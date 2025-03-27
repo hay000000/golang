@@ -7,7 +7,7 @@ import (
 )
 
 // ParseGlob : 경로안에 있는거 다 잡을때 좋음음
-var templates = template.Must(template.ParseGlob("./cmd/web/templates/*.html"))
+var templates = template.Must(template.ParseGlob("./web/templates/*.html"))
 
 // Home 핸들러
 func home(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Welcome list page!</h1>
+    <p>Select an option below:</p>
+
+    <button onclick="location.href='/gohy'">Home</button>
+    <button onclick="location.href='/gohy/list'">Show List</button>
+    <button onclick="location.href='/gohy/api'">Click Api</button>
+
+    <div class="user-container">
+        <form id="name-form">
+            <span>닉네임</span>
+            <input type="text" id="name-input"/>
+            <button id="name-save">저장</button>
+        </form>
+    
+        <div class="participant-container">
+            <ul id="participants">
+    
+            </ul>
+        </div>
+    
+    </div>
+    <div class="chat-container hide">
+        <ul id="messages">
+        </ul>
+    
+        <form class="input-container" id="chat-form">
+            <input type="text" class="input-box" placeholder="메시지를 입력하세요" id="chat-text">
+            <button class="send-button">전송</button>
+        </form>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+            integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <!-- 여기에 스크립트 추가할 예정 -->
+</body>
+</html>
