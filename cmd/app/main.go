@@ -19,7 +19,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "home.html", nil)
 }
 
-func listPage(w http.ResponseWriter, r *http.Request) {
+func chatPage(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "list.html", nil)
 }
 
@@ -128,21 +128,14 @@ func read(p *Peer) {
 			// 중복 아님 → 이름 등록
 			p.Name = chat.Author
 
-			// 닉네임 등록 성공 시 클라이언트에게 알림
+			// 닉네임 등록 성공 및 참가 알림을 하나의 메시지로 통합
 			successMsg := ChatMessage{
 				Author:  "admin",
-				Message: "닉네임이 등록되었습니다.",
-				Type:    2,
-			}
-			_ = p.Conn.WriteJSON(successMsg)
-
-			// 참가 알림 전송
-			join := ChatMessage{
-				Author:  "admin",
 				Message: fmt.Sprintf("%s님이 참가했습니다.", p.Name),
-				Type:    0,
+				Type:    2, // 성공 타입 유지
 			}
-			sendAll(join)
+			// _ = p.Conn.WriteJSON(successMsg) // 본인에게 전송
+			sendAll(successMsg) // 모든 사용자에게 전송
 
 		case 1: // 일반 메시지
 			if p.Name == "" {
@@ -185,7 +178,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/gohy", home)
-	mux.HandleFunc("/gohy/list", listPage)
+	mux.HandleFunc("/gohy/chat", chatPage)
 
 	mux.HandleFunc("/ws", socketHandler)
 	mux.HandleFunc("/getUsers", getUsersHandler)

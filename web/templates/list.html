@@ -7,9 +7,9 @@
     <title>Chat</title>
 </head>
 <body>
-    <h1>Welcome list page!</h1>
+    <h1>Welcome Chating page!</h1>
     <button onclick="location.href='/gohy'">Home</button>
-    <button onclick="location.href='/gohy/list'">Show List</button>
+    <button onclick="location.href='/gohy/chat'">Chating Page</button>
     <button onclick="location.href='/gohy/api'">Click Api</button>
 
 
@@ -80,18 +80,16 @@
                     alert(data.Message);
                     nameInput.val('');
                     nameInput.focus();
-
-                    // 닉네임 중복인 경우 기존 연결 끊고 다시 연결
-                    if (websocket.readyState === WebSocket.OPEN || websocket.readyState === WebSocket.CLOSING) {
+                    
+                    // 닉네임 중복 시 새로운 WebSocket 연결
+                    if (websocket) {
                         websocket.close();
                     }
-                    setTimeout(connectWebSocket, 100); // 짧게 대기 후 재연결
+                    setTimeout(connectWebSocket, 500); // 0.5초 후 재연결
                     return;
-
                 case 0:
                     message = `<li class="message notice-message">${data.Message}</li>`;
                     break;
-
                 case 1:
                     if (data.Author === userName) {
                         message = `<li class="message user-message">${data.Author} : ${data.Message}</li>`;
@@ -99,14 +97,15 @@
                         message = `<li class="message other-message">${data.Author} : ${data.Message}</li>`;
                     }
                     break;
-
-                case 2: // 등록 성공 (안 쓰더라도 대비 가능)
-                    $("#name-save").hide();
-                    nameInput.prop("disabled", true);
-                    $(".chat-container").removeClass("hide");
+                case 2:
+                    // 본인의 닉네임 등록 성공 시에만 UI 변경
+                    if (data.Message.includes(userName)) {
+                        $("#name-save").hide();
+                        nameInput.prop("disabled", true);
+                        $(".chat-container").removeClass("hide");
+                    }
                     message = `<li class="message notice-message">${data.Message}</li>`;
                     break;
-
                 default:
                     message = `<li class="message notice-message">내부 문제가 발생했습니다.</li>`;
             }
@@ -140,14 +139,22 @@
                 return;
             }
 
-            if (websocket.readyState === WebSocket.OPEN) {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                connectWebSocket(); // WebSocket이 없거나 연결이 끊어진 경우 재연결
+                // 연결 완료 후 메시지 전송
+                websocket.onopen = function() {
+                    websocket.send(JSON.stringify({
+                        Author: userName,
+                        Message: "",
+                        Type: 0
+                    }));
+                };
+            } else {
                 websocket.send(JSON.stringify({
                     Author: userName,
                     Message: "",
                     Type: 0
                 }));
-            } else {
-                alert("WebSocket이 연결되지 않았습니다. 잠시 후 다시 시도해주세요.");
             }
         });
 
